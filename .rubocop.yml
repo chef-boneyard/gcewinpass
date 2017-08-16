@@ -21,3 +21,4 @@ Style/InverseMethods:
 
 Style/StringLiterals:
   Enabled: true
+  EnforcedStyle: single_quotes
