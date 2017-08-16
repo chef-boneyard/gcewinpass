@@ -18,3 +18,6 @@ Style/GuardClause:
 
 Style/InverseMethods:
   Enabled: false
+
+Style/StringLiterals:
+  Enabled: true
