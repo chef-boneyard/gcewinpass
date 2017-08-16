@@ -1,4 +1,10 @@
+Layout/IndentHeredoc:
+  Enabled: false
+
 Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
   Enabled: false
 
 Metrics/ClassLength:
@@ -22,3 +28,7 @@ Style/InverseMethods:
 Style/StringLiterals:
   Enabled: true
   EnforcedStyle: single_quotes
+
+Style/TrailingCommaInLiteral:
+  Enabled: true
+  SupportedStylesForMultiline: comma

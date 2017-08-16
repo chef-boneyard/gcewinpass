@@ -31,7 +31,7 @@ describe GoogleComputeWindowsPassword do
       zone:          zone,
       instance_name: instance_name,
       username:      username,
-      email:         email
+      email:         email,
     }
   end
 

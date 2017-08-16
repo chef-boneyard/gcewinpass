@@ -60,7 +60,7 @@ class GoogleComputeWindowsPassword
     @authorization ||= Google::Auth.get_application_default(
       [
         'https://www.googleapis.com/auth/cloud-platform',
-        'https://www.googleapis.com/auth/compute'
+        'https://www.googleapis.com/auth/compute',
       ]
     )
   end
@@ -87,7 +87,7 @@ class GoogleComputeWindowsPassword
       'modulus'  => modulus,
       'exponent' => exponent,
       'email'    => email,
-      'expireOn' => expiration_date
+      'expireOn' => expiration_date,
     }
   end
 
