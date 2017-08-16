@@ -15,3 +15,6 @@ Style/Documentation:
 
 Style/GuardClause:
   Enabled: false
+
+Style/InverseMethods:
+  Enabled: false

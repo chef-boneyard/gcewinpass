@@ -100,7 +100,7 @@ class GoogleComputeWindowsPassword
 
   def update_instance_metadata
     instance_metadata.items = [] if instance_metadata.items.nil?
-    instance_metadata.items = instance_metadata.items.reject { |item| item.key == 'windows-keys' }
+    instance_metadata.items = instance_metadata.items.select { |item| item.key != 'windows-keys' }
     instance_metadata.items << password_request_metadata
 
     log_debug("Updating instance #{instance_name} metadata with: #{instance_metadata.inspect}")
