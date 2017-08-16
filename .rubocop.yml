@@ -32,3 +32,6 @@ Style/StringLiterals:
 Style/TrailingCommaInLiteral:
   Enabled: true
   SupportedStylesForMultiline: comma
+
+Style/SymbolArray:
+  Enabled: false
