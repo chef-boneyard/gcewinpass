@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "gcewinpass/version"
-require "google/apis/compute_v1"
-require "base64"
-require "json"
-require "openssl"
-require "time"
-require "timeout"
+require 'gcewinpass/version'
+require 'google/apis/compute_v1'
+require 'base64'
+require 'json'
+require 'openssl'
+require 'time'
+require 'timeout'
 
 class GoogleComputeWindowsPassword
   attr_reader :api, :project, :zone, :instance_name, :username, :email, :debug
@@ -37,7 +37,7 @@ class GoogleComputeWindowsPassword
     @zone          = opts[:zone]
     @instance_name = opts[:instance_name]
     @email         = opts[:email]
-    @username      = opts.fetch(:username, "Administrator")
+    @username      = opts.fetch(:username, 'Administrator')
     @debug         = opts.fetch(:debug, false)
     @timeout       = opts.fetch(:timeout, 120)
   end
@@ -50,17 +50,17 @@ class GoogleComputeWindowsPassword
   end
 
   def validate_options!(opts)
-    raise "Project not specified"                   unless opts[:project]
-    raise "Zone not specified"                      unless opts[:zone]
-    raise "Instance name not specified"             unless opts[:instance_name]
-    raise "Email address of GCE user not specified" unless opts[:email]
+    raise 'Project not specified'                   unless opts[:project]
+    raise 'Zone not specified'                      unless opts[:zone]
+    raise 'Instance name not specified'             unless opts[:instance_name]
+    raise 'Email address of GCE user not specified' unless opts[:email]
   end
 
   def authorization
     @authorization ||= Google::Auth.get_application_default(
       [
-        "https://www.googleapis.com/auth/cloud-platform",
-        "https://www.googleapis.com/auth/compute",
+        'https://www.googleapis.com/auth/cloud-platform',
+        'https://www.googleapis.com/auth/compute'
       ]
     )
   end
@@ -83,31 +83,31 @@ class GoogleComputeWindowsPassword
 
   def password_request
     {
-      "userName" => username,
-      "modulus"  => modulus,
-      "exponent" => exponent,
-      "email"    => email,
-      "expireOn" => expiration_date,
+      'userName' => username,
+      'modulus'  => modulus,
+      'exponent' => exponent,
+      'email'    => email,
+      'expireOn' => expiration_date
     }
   end
 
   def password_request_metadata
     Google::Apis::ComputeV1::Metadata::Item.new.tap do |item|
-      item.key = "windows-keys"
+      item.key = 'windows-keys'
       item.value = password_request.to_json
     end
   end
 
   def update_instance_metadata
     instance_metadata.items = [] if instance_metadata.items.nil?
-    instance_metadata.items = instance_metadata.items.select { |item| item.key != "windows-keys" }
+    instance_metadata.items = instance_metadata.items.reject { |item| item.key == 'windows-keys' }
     instance_metadata.items << password_request_metadata
 
     log_debug("Updating instance #{instance_name} metadata with: #{instance_metadata.inspect}")
 
     wait_for_operation(api.set_instance_metadata(project, zone, instance_name, instance_metadata))
 
-    log_debug("Instance metadata updated.")
+    log_debug('Instance metadata updated.')
   end
 
   def private_key
@@ -132,13 +132,13 @@ class GoogleComputeWindowsPassword
 
   def password_from_instance
     response = response_from_console_port
-    raise "Password agent attempted the reset but did not succeed" if response["passwordFound"] == false
+    raise 'Password agent attempted the reset but did not succeed' if response['passwordFound'] == false
 
-    private_key.private_decrypt(Base64.strict_decode64(response["encryptedPassword"]), OpenSSL::PKey::RSA::PKCS1_OAEP_PADDING)
+    private_key.private_decrypt(Base64.strict_decode64(response['encryptedPassword']), OpenSSL::PKey::RSA::PKCS1_OAEP_PADDING)
   end
 
   def response_from_console_port
-    log_debug("fetching password from console port")
+    log_debug('fetching password from console port')
 
     Timeout.timeout(timeout) do
       loop do
@@ -146,23 +146,23 @@ class GoogleComputeWindowsPassword
           line.strip!
 
           begin
-            event = JSON.load(line)
+            event = JSON.parse(line)
           rescue JSON::ParserError
             next
           end
 
-          if event["modulus"] == modulus && event["exponent"] == exponent
-            log_debug("modulus and exponent found - returning event")
+          if event['modulus'] == modulus && event['exponent'] == exponent
+            log_debug('modulus and exponent found - returning event')
             return event
           end
         end
 
-        log_debug("event not found, sleeping...")
+        log_debug('event not found, sleeping...')
         sleep 5
       end
     end
   rescue Timeout::Error
-    raise Timeout::Error, "Timeout while waiting for password agent to perform password reset"
+    raise Timeout::Error, 'Timeout while waiting for password agent to perform password reset'
   end
 
   def wait_for_operation(operation_obj)
@@ -173,17 +173,17 @@ class GoogleComputeWindowsPassword
         loop do
           operation = operation(operation_name)
           log_debug("Current operation status: #{operation.status}")
-          break if operation.status == "DONE"
+          break if operation.status == 'DONE'
 
           sleep 2
         end
       end
     rescue Timeout::Error
-      raise Timeout::Error, "Timeout while performing GCE API operation"
+      raise Timeout::Error, 'Timeout while performing GCE API operation'
     end
 
     check_operation_for_errors!(operation_name)
-    log_debug("Operation completed successfully.")
+    log_debug('Operation completed successfully.')
   end
 
   def check_operation_for_errors!(operation_name)
@@ -193,7 +193,7 @@ class GoogleComputeWindowsPassword
         memo << "#{error.code}: #{error.message}"
       end
 
-      raise "Operation failed: #{errors.join(", ")}"
+      raise "Operation failed: #{errors.join(', ')}"
     end
   end
 
