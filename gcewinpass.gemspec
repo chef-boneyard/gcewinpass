@@ -18,6 +18,8 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
 
+  spec.required_ruby_version = '>= 2.3'
+
   spec.add_dependency 'google-api-client', '~> 0.13'
 
   spec.add_development_dependency 'bundler', '~> 1.7'
